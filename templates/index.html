@@ -1,0 +1,185 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+
+<div class="container d-flex justify-content-center ">
+
+
+ 
+    <div id="myNav" class="overlay">
+
+        <!-- Button to close the overlay navigation -->
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+      
+        <!-- Overlay content -->
+        <div class="overlay-content" id='modelGraph'>
+            <canvas id="myChart1"  ></canvas>
+        </div>
+      
+      </div>
+
+     
+
+
+
+    <div class="card p-3  w-50 mt-5">
+        
+        <h1 class='text-center'>Stock Ticker App</h1>
+        <hr>
+
+        <form class="" method="GET" id='graphForm' >
+
+          <div class="form-inline">
+              
+        
+            <div class="form-group d-flex justify-content-center">
+                <label for="exampleInputEmail1">Ticker Symbol &nbsp</label>
+                <input type="text" class="form-control ml-1" id="exampleInputEmail1" aria-describedby="emailHelp" name='symbol' placeholder="Enter ticker symbol" required>
+            </div>
+          
+            <div class="form-group d-flex justify-content-center">
+                <label for="exampleInputEmail1">Start Date &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                <input type="date" class="form-control ml-1" style="width: 210px !important;" id="start-date" aria-describedby="emailHelp" placeholder="Enter ticker symbol" >
+            </div>
+            <div class="form-group d-flex justify-content-center">
+                <label for="exampleInputEmail1">End Date &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                <input type="date" class="form-control ml-1" style="width: 210px !important;"  id="end-date" aria-describedby="emailHelp"  placeholder="Enter ticker symbol" >
+            </div>
+
+
+            <!-- <div class="form-group ml-2">
+                <label for="exampleInputPassword1">End Data &nbsp;&nbsp;&nbsp;&nbsp; &nbsp&nbsp</label>
+                <input type='date' name="end_date" style='width:205px !important' class="form-control ml-1" id="exampleInputPassword1" placeholder="Enter End Date">
+            </div>   -->
+          
+
+          </div>
+<!--             
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" name='closing_price' >
+            <label class="form-check-label mr-2" for="exampleCheck1">Closing Price</label>
+            <span class="float-right mr-2">
+                <input type="checkbox" class="form-check-input"  name='adjusted_closing_price'>
+                <label class="form-check-label mr-2" for="exampleCheck1">Adjusted Closing Price</label>
+            </span>
+        </div>     
+
+
+        <div class="form-check">        
+            <input type="checkbox" class="form-check-input"  name='opening_price'>
+            <label class="form-check-label mr-2" for="exampleCheck1">Opening Price</label>
+            <span class="float-right">
+                <input type="checkbox" class="form-check-input" name='adjusted_opening_price'>
+                <label class="form-check-label mr-2" for="exampleCheck1">Adjusted Opening Price</label>
+            </span>
+        </div>      -->
+   
+
+
+        &nbsp; Monthly  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<input type="checkbox" name='monthly'><br>
+        &nbsp; Weakly  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<input type="checkbox" name='weakly'> <br>
+        &nbsp; Daily  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;<input class="ml-1" type="checkbox" name='daily'> <br>
+        <!-- &nbsp; Minutes  &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;        -->
+         <!-- <select class="" name='min_interval' id="exampleFormControlSelect1">
+            <option value="">-</option>
+            <option>5</option>
+            <option>15</option>
+            <option>30</option>
+            <option>60</option>
+          </select> -->
+
+
+          <hr>
+        &nbsp; Options:  &nbsp; &nbsp; &nbsp; &nbsp;<input class="ml-1" type="checkbox" checked id='open-checkbox' name='same'>
+        &nbsp; Open   <input class="ml-1" type="checkbox" id='close-checkbox' name='same'>
+        &nbsp; Close  <input class="ml-1" type="checkbox"  id='high-checkbox' name='same'>
+        &nbsp; High   <input class="ml-1" type="checkbox"  id='low-checkbox' name='same'>
+        &nbsp; Low  
+        &nbsp; Volume   <input class="ml-1" type="checkbox"  id='volume-checkbox' name='same'>
+        
+
+ 
+
+
+         <hr>
+            <div class="d-flex justify-content-center ">
+                <button type="submit " class="btn btn-primary  " id='graphForm'>Submit</button>
+            </div>
+          </form>
+    </div>
+    <div class="card p-3 m-5">
+        
+        <div  id='graphImage'>
+            <canvas id="myChart" ></canvas>
+        </div>
+    </div>
+
+</div>
+
+
+
+  
+
+
+
+<style>
+    /* The Overlay (background) */
+.overlay {
+  /* Height & width depends on how you want to reveal the overlay (see JS below) */   
+  height: 100%;
+  width: 0;
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  background-color: rgb(0,0,0); /* Black fallback color */
+  background-color: rgba(0,0,0, 0.9); /* Black w/opacity */
+  overflow-x: hidden; /* Disable horizontal scroll */
+  transition: 0.5s; /* 0.5 second transition effect to slide in or slide down the overlay (height or width, depending on reveal) */
+}
+
+/* Position the content inside the overlay */
+.overlay-content {
+  position: relative;
+  top: 25%; /* 25% from the top */
+  width: 100%; /* 100% width */
+  text-align: center; /* Centered text/links */
+  margin-top: 30px; /* 30px top margin to avoid conflict with the close button on smaller screens */
+}
+
+/* The navigation links inside the overlay */
+.overlay a {
+  padding: 8px;
+  text-decoration: none;
+  font-size: 36px;
+  color: #818181;
+  display: block; /* Display block instead of inline */
+  transition: 0.3s; /* Transition effects on hover (color) */
+}
+
+/* When you mouse over the navigation links, change their color */
+.overlay a:hover, .overlay a:focus {
+  color: #f1f1f1;
+}
+
+/* Position the close button (top right corner) */
+.overlay .closebtn {
+  position: absolute;
+  top: 20px;
+  right: 45px;
+  font-size: 60px;
+}
+
+/* When the height of the screen is less than 450 pixels, change the font-size of the links and position the close button again, so they don't overlap */
+@media screen and (max-height: 450px) {
+  .overlay a {font-size: 20px}
+  .overlay .closebtn {
+    font-size: 40px;
+    top: 15px;
+    right: 35px;
+  }
+}
+</style>
+
+{% endblock content %}

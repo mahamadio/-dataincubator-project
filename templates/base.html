@@ -1,0 +1,238 @@
+
+<!doctype html>
+<html lang="en">
+  
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <title>Stock Ticker</title>
+    </head>
+
+  <body>
+
+
+    {% block content %}
+      
+    {% endblock content %}
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.0.2/chart.min.js" integrity="sha512-dnUg2JxjlVoXHVdSMWDYm2Y5xcIrJg1N+juOuRi0yLVkku/g26rwHwysJDAMwahaDfRpr1AxFz43ktuMPr/l1A==" crossorigin="anonymous"></script>
+
+    <script>
+    function openNav() {
+      document.getElementById("myNav").style.width = "100%";
+    }
+
+    /* Close when someone clicks on the "x" symbol inside the overlay */
+    function closeNav() {
+      document.getElementById("myNav").style.width = "0%";
+    }
+
+    function reverseArr(input) {
+        var ret = new Array;
+        for(var i = input.length-1; i >= 0; i--) {
+            ret.push(input[i]);
+        }
+        return ret;
+    }    
+
+    function drawGraph(labelss,dataa,id,labelFoDisplay) {
+  
+      var ctx = document.getElementById(id);
+      var myChart = new Chart(ctx, {
+          type: 'line',
+          data: {
+              labels: reverseArr(labelss),
+              datasets: [{
+                  label: labelFoDisplay,
+                  data: reverseArr(dataa),
+                  backgroundColor: [
+                      'rgba(255, 99, 132, 0.2)',
+                      'rgba(54, 162, 235, 0.2)',
+                      'rgba(255, 206, 86, 0.2)',
+                      'rgba(75, 192, 192, 0.2)',
+                      'rgba(153, 102, 255, 0.2)',
+                      'rgba(255, 159, 64, 0.2)'
+                  ],
+                  borderColor: [
+                      'rgba(255, 99, 132, 1)',
+                      'rgba(54, 162, 235, 1)',
+                      'rgba(255, 206, 86, 1)',
+                      'rgba(75, 192, 192, 1)',
+                      'rgba(153, 102, 255, 1)',
+                      'rgba(255, 159, 64, 1)'
+                  ],
+                  borderWidth: 1
+              }]
+          },
+          options: {
+              scales: {
+                  y: {
+                      beginAtZero: true
+                  }
+              }
+          }
+      });
+   
+    }
+   
+    function checkboxOption() {
+      if($('#open-checkbox').is(':checked')){
+        return 0
+      }
+      else if($('#high-checkbox').is(':checked'))
+      {
+        return 1
+      }
+      else if($('#low-checkbox').is(':checked'))
+      {
+        return 2
+      }            
+      else if($('#close-checkbox').is(':checked'))
+      {
+        return 3
+      }
+      else if($('#volume-checkbox').is(':checked'))
+      {
+        return 4
+      }
+    }
+    function getLabel(no) {
+      if (no === 0)
+      {return 'Based on Open Values'}
+      else if(no === 1)
+      {return 'Based on High Values'}
+      else if(no === 2)
+      {return 'Based on Low Values'}
+      else if(no === 3)
+      {return 'Based on Close Values'}            
+      else if(no === 4)
+      {return 'Based on Volumes'}                  
+    }
+
+    function returnStartDate() {
+      return  $('#start-date').val()
+    }
+    function returnEndDate() {
+      return  $('#end-date').val()
+    }    
+
+    $('#graphForm').submit(function(e){
+        var valNo = checkboxOption()
+        var labelFoDisplay = getLabel(valNo)
+        var action = $(this).attr('action');
+        var that = $(this);
+        var labels = []
+        var datas = []
+
+        console.log('start-date')
+        var startDate = returnStartDate()
+        console.log('end-date')
+        var endDate = returnEndDate()
+
+        
+        var ctx = document.getElementById('myChart');
+        $('#graphImage').html('')
+        $('#graphImage').html('<button onclick="openNav()" id="fullscreenbtn" class="btn btn-outline-info">Full Screen</button><canvas id="myChart" width="400" height="400"></canvas>')
+        $('#modelGraph').html('')
+        $('#modelGraph').html('<canvas id="myChart1"></canvas>')
+
+
+
+        $.ajax({
+            url: "/getJSONDATA/",
+            type: 'POST',
+            data: that.serialize(),
+            // dataType: 'json',
+            dataType: 'json',
+            success: function (data) {
+
+              var p = data[Object.keys(data)[1]]
+              for (let [key, value] of Object.entries(p)) {
+              // console.log(`${key}: ${value}`);
+              labels.push(key)
+              datas.push(value[Object.keys(value)[valNo]])
+              
+              // console.log(value[Object.keys(value)[0]],value[Object.keys(value)[1]])
+            }
+
+              var valuesArray = []
+              var items = labels.slice(0, labels.length).map(i => {
+              var stemp1 =startDate.substring(0,4)
+              var stemp2 =startDate.substring(5,7)
+              var etemp1 =endDate.substring(0,4)
+              var etemp2 =endDate.substring(5,7)              
+
+              var temp1 = i.substring(0, 4);
+              var temp2 = i.substring(5, 7);
+             
+              // console.log(temp1,stemp1,etemp1)
+
+              // console.log(d1,d2)
+              // console.log(+d2 >= +d1)
+              // if( temp1 >= stemp1 && temp1 <= etemp1 )
+              //   { 
+                  var d1 = new Date(startDate)
+                  var d2 = new Date(i)
+                  var d3 = new Date(endDate)
+                  if (+d2 >= +d1 && +d2 <=d3 ) {
+                    valuesArray.push(i)
+                  return i 
+                  }
+
+                // }
+              })
+            var itemss = datas.slice(0, datas.length).map(i => {return i})    
+            var selectedValues =[]
+
+            for (let index = 0; index < valuesArray.length; index++) {
+              var i = labels.indexOf(valuesArray[index])
+              // console.log(i)
+              selectedValues.push(itemss[i])
+            }
+
+              var r1 = selectedValues.reverse()
+              var r2 = valuesArray.reverse() 
+              drawGraph(valuesArray,selectedValues,'myChart',labelFoDisplay)
+              drawGraph(valuesArray,selectedValues,'myChart1',labelFoDisplay)
+                     
+              
+
+            },
+            error: function (response) {
+              console.log(response)
+         
+            }            
+         
+        });
+        e.preventDefault()
+
+    
+     
+    });
+    document.getElementById("start-date").defaultValue = "2015-02-09";
+    document.getElementById("end-date").defaultValue = "2021-02-09";
+
+
+    $("input:checkbox").on('click', function() {
+  // in the handler, 'this' refers to the box clicked on
+  var $box = $(this);
+  if ($box.is(":checked")) {
+    // the name of the box is retrieved using the .attr() method
+    // as it is assumed and expected to be immutable
+    var group = "input:checkbox[name='" + $box.attr("name") + "']";
+    // the checked state of the group/box on the other hand will change
+    // and the current value is retrieved using .prop() method
+    $(group).prop("checked", false);
+    $box.prop("checked", true);
+  } else {
+    $box.prop("checked", false);
+  }
+});
+   </script>
+
+
+  </body>
+</html>
